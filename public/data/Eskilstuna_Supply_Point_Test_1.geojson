@@ -1,0 +1,8 @@
+{
+"type": "FeatureCollection",
+"name": "Eskilstuna_Supply_Point_Test_1",
+"crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:EPSG::3006" } },
+"features": [
+{ "type": "Feature", "properties": { "ID": 1, "Name": "Test SP 1", "MunicipalID": 1, "Address": "Test Address 1", "EntranceRoadID": "3:292481", "EntranceRoadCoordinate": "�\u000b" }, "geometry": { "type": "Point", "coordinates": [ 587148.680000000051223, 6582184.759999999776483 ] } }
+]
+}

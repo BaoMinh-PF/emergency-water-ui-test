@@ -1,0 +1,8 @@
+{
+"type": "FeatureCollection",
+"name": "Eskilstuna_Distribution_Point_Test_1",
+"crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:EPSG::3006" } },
+"features": [
+{ "type": "Feature", "properties": { "ID": 2, "Name": "Test Point", "Address": "123 Test St", "MunicipalID": 1, "EntranceRoadID": "3:291373", "EntranceRoadCoordinate": "�\u000b" }, "geometry": { "type": "Point", "coordinates": [ 587566.199999999953434, 6583324.900000000372529 ] } }
+]
+}
