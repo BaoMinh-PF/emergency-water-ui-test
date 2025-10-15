@@ -9,7 +9,7 @@ export default function Home() {
     const [activeTypes, setActiveTypes] = useState<string[]>([]);
     const [geoData, setGeoData] = useState<GeometryType[]>([]);
     const loadedGeoData = geometryData;
-    const options = geometryData.keys().toArray();
+    const [options, setOptions] = useState<string[]>(Array.from(loadedGeoData.keys()));
 
     async function fetchData() {
         const municipal = await fetch("data/Eskilstuna_Municipal_Map.geojson");
@@ -39,8 +39,13 @@ export default function Home() {
         const route = await fetch("data/Eskilstuna_Route_Test_1.geojson");
         style = loadedGeoData.get("ROUTE")?.style;
         loadedGeoData.set("ROUTE", { data: await route.json(), order: 8, style: style! });
-
     }
+
+    useEffect(() => {
+        if (loadedGeoData) {
+            setOptions(Array.from(loadedGeoData.keys()));
+        }
+    }, [loadedGeoData])
 
     useEffect(() => {
         fetchData()

@@ -104,4 +104,4 @@ export const geometryData: Map<string, GeometryType> = new Map([
       }),
     },
   ],
-]);
+]) as Map<string, GeometryType>;
