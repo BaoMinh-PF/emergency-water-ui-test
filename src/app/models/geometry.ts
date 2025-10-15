@@ -1,3 +1,5 @@
+"use client";
+
 import { FeatureCollection } from "geojson";
 import Fill from "ol/style/Fill";
 import Icon from "ol/style/Icon";
@@ -22,7 +24,7 @@ export const geometryData: Map<string, GeometryType> = new Map([
           width: 3,
         }),
       }),
-    }, 
+    },
   ],
   [
     "SUPPLY POINT",
