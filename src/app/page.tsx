@@ -9,7 +9,7 @@ export default function Home() {
     const [activeTypes, setActiveTypes] = useState<string[]>([]);
     const [geoData, setGeoData] = useState<GeometryType[]>([]);
     const loadedGeoData = geometryData;
-    const options = geometryData.keys().toArray();
+    const options = ["Test"];
 
     // async function fetchData() {
     //     const municipal = await fetch("data/Eskilstuna_Municipal_Map.geojson");
