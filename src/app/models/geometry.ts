@@ -22,7 +22,7 @@ export const geometryData: Map<string, GeometryType> = new Map([
           width: 3,
         }),
       }),
-    },
+    }, 
   ],
   [
     "SUPPLY POINT",
