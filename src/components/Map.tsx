@@ -9,10 +9,11 @@ import VectorLayer from 'ol/layer/Vector';
 import VectorSource from 'ol/source/Vector';
 import { fromLonLat } from 'ol/proj';
 import GeoJSON from 'ol/format/GeoJSON';
-import { FeatureCollection } from 'geojson';
 import proj4 from 'proj4';
 import { register } from "ol/proj/proj4";
 import { GeometryType } from '@/app/models/geometry';
+import Style from 'ol/style/Style';
+import Text from 'ol/style/Text';
 
 type Props = {
     geoData: GeometryType[];
@@ -31,8 +32,8 @@ export default function OlMap({ geoData }: Props) {
 
     useEffect(() => {
         if (!mapRef.current || mapObj.current) return;
-        const osmLayer = new TileLayer({ source: new OSM() }); // OSM first layer
-        vectorLayer.current = new VectorLayer({ source: new VectorSource() });
+        const osmLayer = new TileLayer({ source: new OSM(), zIndex: 0, }); // OSM first layer
+        vectorLayer.current = new VectorLayer({ source: new VectorSource(), zIndex: 1, });
         mapObj.current = new Map({
             target: mapRef.current,
             layers: [osmLayer, vectorLayer.current],
@@ -60,6 +61,26 @@ export default function OlMap({ geoData }: Props) {
                 dataProjection: "EPSG:3006",
                 featureProjection: "EPSG:3857",
             });
+
+            feats.forEach((feat) => {
+                feat.setStyle(geo.style);
+            });
+
+            if (geo.order === 3) {
+                feats.forEach((feat) => {
+                    const originalStyle = feat.getStyle() as Style;
+                    const newStyle = new Style({
+                        fill: originalStyle.getFill()!,
+                        text: new Text({
+                            text: feat.get("distriktsnamn"),
+                            font: "14px Arial",
+                        }),
+                    });
+            
+                    feat.setStyle(newStyle);
+                });
+            }
+
             source.addFeatures(feats);
         });
 
