@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Map from 'ol/Map';
 import View from 'ol/View';
 import TileLayer from 'ol/layer/Tile';
@@ -30,6 +30,12 @@ export default function OlMap({ geoData }: Props) {
     const mapObj = useRef<Map | null>(null);
     const vectorLayer = useRef<VectorLayer<VectorSource> | null>(null);
     const hoveredFeatureRef = useRef<Feature | null>(null);
+    const [tooltip, setTooltip] = useState<{
+        visible: boolean;
+        x: number;
+        y: number;
+        content: string;
+    }>({ visible: false, x: 0, y: 0, content: '' });
 
     const handlePointerMove = (event: MapBrowserEvent) => {
         const map = mapObj.current;
@@ -56,6 +62,42 @@ export default function OlMap({ geoData }: Props) {
                 if (image) image.setScale(1.5);
                 feature.setStyle(style);
                 hoveredFeatureRef.current = feature;
+                let tooltipContent = "";
+                const type = feature.get("geometryType");
+                if (!type) {
+                    return;
+                }
+
+                if (type === 4) {
+                    const name = feature.get("Firmabenämning") || 'N/A';
+                    const address = feature.get("Besöksadress") || 'N/A';
+                    tooltipContent = `Preschool
+                                    Address: ${address}
+                                    Name: ${name}`;
+
+                } else if (type === 6) {
+                    const name = feature.get("Name") || 'N/A';
+                    const address = feature.get("Address") || 'N/A';
+                    tooltipContent = `Distribution Point
+                                    Address: ${address}
+                                    Name: ${name}`;
+                } else if (type === 7) {
+                    const name = feature.get("Name") || 'N/A';
+                    const address = feature.get("Address") || 'N/A';
+                    tooltipContent = `Supply Point
+                                    Address: ${address}
+                                    Name: ${name}`;
+                } else {
+                    return;
+                }
+
+                const mouseEvent = event.originalEvent as MouseEvent;
+                setTooltip({
+                    visible: true,
+                    x: mouseEvent.clientX,
+                    y: mouseEvent.clientY - 80, // Position above cursor
+                    content: tooltipContent
+                });
             }
         } else {
             // Restore previous hovered feature's image scale
@@ -66,6 +108,8 @@ export default function OlMap({ geoData }: Props) {
                 hoveredFeatureRef.current.setStyle(prevStyle);
                 hoveredFeatureRef.current = null;
             }
+
+            setTooltip({ visible: false, x: 0, y: 0, content: '' });
         }
     };
 
@@ -109,6 +153,7 @@ export default function OlMap({ geoData }: Props) {
 
             feats.forEach((feat) => {
                 feat.setStyle(geo.style.clone());
+                feat.setProperties({ ...feat.getProperties(), geometryType: geo.order })
             });
 
             if (geo.order === 3) {
@@ -134,7 +179,31 @@ export default function OlMap({ geoData }: Props) {
 
 
     return (
-        <div style={{ width: '100%', height: "100vh" }} ref={mapRef} />
+        <>
+            <div ref={mapRef} style={{ width: "100%", height: "100vh" }} />
+            {tooltip.visible && (
+                <div
+                    style={{
+                        position: 'fixed',
+                        left: `${tooltip.x}px`,
+                        top: `${tooltip.y}px`,
+                        background: 'rgba(0, 0, 0, 0.8)',
+                        color: 'white',
+                        padding: '8px 12px',
+                        borderRadius: '4px',
+                        pointerEvents: 'none',
+                        transform: 'translateX(-50%)',
+                        whiteSpace: 'pre-line',
+                        zIndex: 1000,
+                        fontSize: '14px',
+                        display: 'flex',
+                        flexDirection: 'column',
+                    }}
+                >
+                    {tooltip.content}
+                </div>
+            )}
+        </>
     );
 }
 
