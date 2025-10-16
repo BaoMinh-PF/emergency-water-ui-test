@@ -1,13 +1,12 @@
 "use client";
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 import Map from 'ol/Map';
 import View from 'ol/View';
 import TileLayer from 'ol/layer/Tile';
 import OSM from 'ol/source/OSM';
 import VectorLayer from 'ol/layer/Vector';
 import VectorSource from 'ol/source/Vector';
-import { fromLonLat } from 'ol/proj';
 import GeoJSON from 'ol/format/GeoJSON';
 import proj4 from 'proj4';
 import { register } from "ol/proj/proj4";
@@ -15,7 +14,6 @@ import { GeometryType } from '@/app/models/geometry';
 import Style from 'ol/style/Style';
 import Text from 'ol/style/Text';
 import { Feature, MapBrowserEvent } from 'ol';
-import Icon from 'ol/style/Icon';
 
 type Props = {
     geoData: GeometryType[];
@@ -31,8 +29,7 @@ export default function OlMap({ geoData }: Props) {
     const mapRef = useRef<HTMLDivElement | null>(null);
     const mapObj = useRef<Map | null>(null);
     const vectorLayer = useRef<VectorLayer<VectorSource> | null>(null);
-    const [hoveringFeature, setHoveringFeature] = useState<Feature | null>(null);
-
+    const hoveredFeatureRef = useRef<Feature | null>(null);
 
     const handlePointerMove = (event: MapBrowserEvent) => {
         const map = mapObj.current;
@@ -41,31 +38,36 @@ export default function OlMap({ geoData }: Props) {
         const pixel = map.getEventPixel(event.originalEvent);
         const hit = map.hasFeatureAtPixel(pixel);
 
-        // Change cursor style
         map.getTargetElement().style.cursor = hit ? "pointer" : "";
 
         if (hit) {
-            const feature = map.forEachFeatureAtPixel(pixel, (feat) => { return feat as Feature });
-            if (feature) {
-                setHoveringFeature(feature);
+            const feature = map.forEachFeatureAtPixel(pixel, (feat) => feat as Feature);
+            if (feature && feature !== hoveredFeatureRef.current) {
+                // Restore previous hovered feature's image scale
+                if (hoveredFeatureRef.current) {
+                    const prevStyle = hoveredFeatureRef.current.getStyle() as Style;
+                    const prevImage = prevStyle?.getImage();
+                    if (prevImage) prevImage.setScale(1);
+                    hoveredFeatureRef.current.setStyle(prevStyle);
+                }
+                // Enlarge current feature's image
+                const style = feature.getStyle() as Style;
+                const image = style?.getImage();
+                if (image) image.setScale(1.5);
+                feature.setStyle(style);
+                hoveredFeatureRef.current = feature;
             }
         } else {
-            setHoveringFeature(null);
+            // Restore previous hovered feature's image scale
+            if (hoveredFeatureRef.current) {
+                const prevStyle = hoveredFeatureRef.current.getStyle() as Style;
+                const prevImage = prevStyle?.getImage();
+                if (prevImage) prevImage.setScale(1);
+                hoveredFeatureRef.current.setStyle(prevStyle);
+                hoveredFeatureRef.current = null;
+            }
         }
     };
-
-    // useEffect(() => {
-    //     if (hoveringFeature === null) return;
-    //     const originalStyle = hoveringFeature.getStyle() as Style;
-    //     const image = originalStyle.getImage();
-    //     image?.setScale(1.5);
-    //     originalStyle.setImage(image!);
-    //     hoveringFeature.setStyle(originalStyle);
-
-    //     setTimeout(() => {
-    //         hoveringFeature.setStyle(originalStyle);
-    //     }, 200);
-    // }, [hoveringFeature])
 
     useEffect(() => {
         if (!mapRef.current || mapObj.current) return;
@@ -106,7 +108,7 @@ export default function OlMap({ geoData }: Props) {
             });
 
             feats.forEach((feat) => {
-                feat.setStyle(geo.style);
+                feat.setStyle(geo.style.clone());
             });
 
             if (geo.order === 3) {
