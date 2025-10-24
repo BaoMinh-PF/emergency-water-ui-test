@@ -152,12 +152,14 @@ export default function OlMap({ geoData, headerHeight = 60 }: Props) {
                 featureProjection: "EPSG:3857",
             });
 
+            // Base styling + geometryType tagging via geo.id
             feats.forEach((feat) => {
                 feat.setStyle(geo.style.clone());
-                feat.setProperties({ ...feat.getProperties(), geometryType: geo.order })
+                feat.setProperties({ ...feat.getProperties(), geometryType: geo.id });
             });
 
-            if (geo.order === 3) {
+            // District labels (unchanged)
+            if (geo.id === 3) {
                 feats.forEach((feat) => {
                     const originalStyle = feat.getStyle() as Style;
                     const newStyle = new Style({
@@ -168,8 +170,25 @@ export default function OlMap({ geoData, headerHeight = 60 }: Props) {
                             font: "14px Arial",
                         }),
                     });
-
                     feat.setStyle(newStyle);
+                });
+            }
+
+            // Per-route color assignment
+            if (geo.id === 8) { // ROUTE
+                const palette = [
+                    "#ff4d4f","#1890ff","#52c41a","#faad14",
+                    "#722ed1","#13c2c2","#eb2f96","#2f54eb",
+                    "#a0d911","#fa541c"
+                ];
+                feats.forEach((feat, idx) => {
+                    const styleClone = geo.style.clone();
+                    const stroke = styleClone.getStroke();
+                    if (stroke) {
+                        stroke.setColor(palette[idx % palette.length]);
+                    }
+                    feat.setStyle(styleClone);
+                    feat.set("routeColor", palette[idx % palette.length]);
                 });
             }
 

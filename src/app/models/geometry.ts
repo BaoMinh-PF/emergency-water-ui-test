@@ -6,7 +6,8 @@ import Style from "ol/style/Style";
 
 export type GeometryType = {
   data: FeatureCollection | null;
-  order: number;
+  id: number; // unique dataset id (was implicit via order)
+  order: number; // still used for layer drawing order
   style: Style;
 };
 
@@ -15,6 +16,7 @@ export const geometryData: Map<string, GeometryType> = new Map([
     "ROUTE",
     {
       data: null,
+      id: 1,
       order: 8,
       style: new Style({
         stroke: new Stroke({
@@ -28,6 +30,7 @@ export const geometryData: Map<string, GeometryType> = new Map([
     "SUPPLY POINT",
     {
       data: null,
+      id: 2,
       order: 7,
       style: new Style({
         image: new Icon({
@@ -42,6 +45,7 @@ export const geometryData: Map<string, GeometryType> = new Map([
     "DISTRIBUTION POINT",
     {
       data: null,
+      id: 3,
       order: 6,
       style: new Style({
         image: new Icon({
@@ -56,6 +60,7 @@ export const geometryData: Map<string, GeometryType> = new Map([
     "ROAD",
     {
       data: null,
+      id: 4,
       order: 5,
       style: new Style({
         stroke: new Stroke({
@@ -69,6 +74,7 @@ export const geometryData: Map<string, GeometryType> = new Map([
     "PRESCHOOL",
     {
       data: null,
+      id: 5,
       order: 4,
       style: new Style({
         image: new Icon({
@@ -83,6 +89,7 @@ export const geometryData: Map<string, GeometryType> = new Map([
     "DISTRICT",
     {
       data: null,
+      id: 6,
       order: 3,
       style: new Style({
         fill: new Fill({
@@ -96,6 +103,7 @@ export const geometryData: Map<string, GeometryType> = new Map([
     "MUNICIPALITY",
     {
       data: null,
+      id: 7,
       order: 2,
       style: new Style({
         fill: new Fill({
