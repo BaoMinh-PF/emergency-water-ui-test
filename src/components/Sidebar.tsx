@@ -2,6 +2,7 @@
 
 import { useRef } from "react";
 import Image from "next/image"; // added
+import { FeatureCollection } from "geojson";
 
 type Props = {
     options: string[];
@@ -10,7 +11,7 @@ type Props = {
     collapsed: boolean;
     width: number;
     onReorder: (next: string[]) => void; // new
-    onImport: (name: string, data: any) => void; // new
+    onImport: (name: string, data: FeatureCollection) => void; // new
 };
 
 export default function Sidebar({ options, actives, onToggle, collapsed, width, onReorder, onImport }: Props) {
