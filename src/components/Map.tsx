@@ -152,13 +152,11 @@ export default function OlMap({ geoData, headerHeight = 60 }: Props) {
                 featureProjection: "EPSG:3857",
             });
 
-            // Base styling + geometryType tagging via geo.id
             feats.forEach((feat) => {
                 feat.setStyle(geo.style.clone());
                 feat.setProperties({ ...feat.getProperties(), geometryType: geo.id });
             });
 
-            // District labels (unchanged)
             if (geo.id === 3) {
                 feats.forEach((feat) => {
                     const originalStyle = feat.getStyle() as Style;

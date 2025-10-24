@@ -5,6 +5,10 @@ import OlMap from "@/components/Map";
 import Sidebar from "@/components/Sidebar";
 import { geometryData, GeometryType } from "./models/geometry";
 import Image from "next/image";
+import Style from "ol/style/Style";
+import Stroke from "ol/style/Stroke";
+import Fill from "ol/style/Fill";
+import { FeatureCollection } from "geojson";
 
 export default function Home() {
     const [activeTypes, setActiveTypes] = useState<string[]>([]);
@@ -15,6 +19,22 @@ export default function Home() {
     const collapsedWidth = 64;
     const expandedWidth = 260;
     const sideWidth = collapsed ? collapsedWidth : expandedWidth;
+
+    const handleImportLayer = (name: string, data: FeatureCollection) => {
+        if (geometryData.has(name)) {
+            alert("Layer name already exists.");
+            return;
+        }
+        const maxId = Array.from(geometryData.values()).reduce((m, v) => Math.max(m, v.id), 0);
+        const order = options.length;
+        const style = new Style({
+            stroke: new Stroke({ color: "#2f54eb", width: 2 }),
+            fill: new Fill({ color: "rgba(24,144,255,0.25)" }),
+        });
+        geometryData.set(name, { id: maxId + 1, data, order, style });
+        setOptions(o => [...o, name]);
+        setActiveTypes(a => [...a, name]);
+    };
 
     async function fetchData() {
         const municipal = await fetch("data/Eskilstuna_Municipal_Map.geojson");
@@ -66,7 +86,18 @@ export default function Home() {
         });
         data.sort((a, b) => a.order - b.order);
         setGeoData(data);
-    }, [activeTypes]);
+    }, [activeTypes, options]);
+
+    const handleReorder = (next: string[]) => {
+        setOptions(next);
+        // Update order (ascending index => lower index draws beneath higher ones if sorting asc)
+        next.forEach((key, idx) => {
+            const entry = geometryData.get(key);
+            if (entry) entry.order = idx; // mutate order
+        });
+        // Force refresh of active ordering
+        setActiveTypes(a => [...a]);
+    };
 
     return (
         <div style={{ display: "flex", flexDirection: 'column', height: "100vh" }}>
@@ -110,6 +141,8 @@ export default function Home() {
                     onToggle={(t) => setActiveTypes(type => activeTypes.includes(t) ? type.filter(item => item !== t) : [...type, t])}
                     collapsed={collapsed}
                     width={sideWidth}
+                    onReorder={handleReorder}
+                    onImport={handleImportLayer} // new
                 />
                 <div style={{ flex: 1, minWidth: 0 }}>
                     <OlMap geoData={geoData} headerHeight={60} />
