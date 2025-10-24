@@ -23,7 +23,7 @@ export default function Sidebar({ options, actives, onToggle, collapsed, width, 
         let url: string | null = null;
         (async () => {
             try {
-                const res = await fetch("/up-down-arrow.svg");
+                const res = await fetch("up-down-arrow.svg");
                 if (!res.ok) return;
                 const blob = await res.blob();
                 url = URL.createObjectURL(blob);

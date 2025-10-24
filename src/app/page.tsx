@@ -81,7 +81,7 @@ export default function Home() {
         let url: string | null = null;
         (async () => {
             try {
-                const res = await fetch("/Logo.png");
+                const res = await fetch("Logo.png");
                 if (!res.ok) return;
                 const blob = await res.blob();
                 url = URL.createObjectURL(blob);
