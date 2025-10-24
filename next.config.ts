@@ -1,5 +1,9 @@
 import type { NextConfig } from "next";
 
-const nextConfig: NextConfig = {};
+const isProd = process.env.NODE_ENV === 'production';
+
+const nextConfig: NextConfig = {
+  ...(isProd && { basePath: '/emergency-water-ui-test' }),
+};
 
 export default nextConfig;
