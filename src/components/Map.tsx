@@ -152,7 +152,7 @@ export default function OlMap({ geoData, headerHeight = 60 }: Props) {
                 featureProjection: "EPSG:3857",
             });
 
-            feats.forEach((feat) => {
+            feats.forEach((feat) => { 
                 feat.setStyle(geo.style.clone());
                 feat.setProperties({ ...feat.getProperties(), geometryType: geo.id });
             });
