@@ -11,7 +11,6 @@ import Fill from "ol/style/Fill";
 import { FeatureCollection } from "geojson";
 
 export default function Home() {
-    console.log(process.env.NODE_ENV);
     const [activeTypes, setActiveTypes] = useState<string[]>([]);
     const [geoData, setGeoData] = useState<GeometryType[]>([]);
     const loadedGeoData = geometryData;
@@ -123,7 +122,7 @@ export default function Home() {
                     }}
                     onClick={() => setCollapsed(c => !c)}
                 >
-                    
+
                     <span style={{
                         fontSize: 24,
                         lineHeight: 1,
