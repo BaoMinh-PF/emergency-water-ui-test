@@ -130,7 +130,7 @@ export default function Home() {
                     {!collapsed && <span style={{ fontWeight: 600, color: '#fff' }}>Layers</span>}
                 </div>
                 <div style={{ flex: 1, textAlign: 'center' }}>
-                    <Image src="/Logo.png" alt="Logo" width={200} height={64} style={{ objectFit: 'contain' }} />
+                    <Image src="Logo.png" alt="Logo" width={200} height={64} style={{ objectFit: 'contain' }} />
                 </div>
                 <div style={{ width: sideWidth }} />
             </header>
