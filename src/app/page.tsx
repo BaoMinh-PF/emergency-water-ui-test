@@ -19,6 +19,7 @@ export default function Home() {
     const collapsedWidth = 64;
     const expandedWidth = 260;
     const sideWidth = collapsed ? collapsedWidth : expandedWidth;
+    const [logoSrc, setLogoSrc] = useState<string>("");
 
     const handleImportLayer = (name: string, data: FeatureCollection) => {
         if (geometryData.has(name)) {
@@ -77,6 +78,24 @@ export default function Home() {
     }, []);
 
     useEffect(() => {
+        let url: string | null = null;
+        (async () => {
+            try {
+                const res = await fetch("/Logo.png");
+                if (!res.ok) return;
+                const blob = await res.blob();
+                url = URL.createObjectURL(blob);
+                setLogoSrc(url);
+            } catch {
+                // silent fail
+            }
+        })();
+        return () => {
+            if (url) URL.revokeObjectURL(url);
+        };
+    }, []);
+
+    useEffect(() => {
         const data: GeometryType[] = [];
         activeTypes.forEach(type => {
             const geo = loadedGeoData.get(type);
@@ -131,7 +150,7 @@ export default function Home() {
                     {!collapsed && <span style={{ fontWeight: 600, color: '#fff' }}>Layers</span>}
                 </div>
                 <div style={{ flex: 1, textAlign: 'center' }}>
-                    <Image src="/Logo.png" alt="Logo" width={200} height={64} style={{ objectFit: 'contain' }} />
+                    <Image src={logoSrc || "/Logo.png"} alt="Logo" width={200} height={64} style={{ objectFit: 'contain' }} />
                 </div>
                 <div style={{ width: sideWidth }} />
             </header>

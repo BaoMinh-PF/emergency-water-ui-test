@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef } from "react";
+import { useRef, useState, useEffect } from "react";
 import Image from "next/image"; // added
 import { FeatureCollection } from "geojson";
 
@@ -17,6 +17,25 @@ type Props = {
 export default function Sidebar({ options, actives, onToggle, collapsed, width, onReorder, onImport }: Props) {
     const dragIndex = useRef<number | null>(null);
     const fileInputRef = useRef<HTMLInputElement | null>(null); // new
+    const [arrowSrc, setArrowSrc] = useState<string>(""); // new
+
+    useEffect(() => { // new
+        let url: string | null = null;
+        (async () => {
+            try {
+                const res = await fetch("/up-down-arrow.svg");
+                if (!res.ok) return;
+                const blob = await res.blob();
+                url = URL.createObjectURL(blob);
+                setArrowSrc(url);
+            } catch {
+                // silent
+            }
+        })();
+        return () => {
+            if (url) URL.revokeObjectURL(url);
+        };
+    }, []);
 
     const handleDragStart = (index: number) => (e: React.DragEvent) => {
         dragIndex.current = index;
@@ -93,7 +112,7 @@ export default function Sidebar({ options, actives, onToggle, collapsed, width, 
                                 />
                                 <span style={{ flex: 1 }}>{opt}</span>
                                 <Image
-                                    src="/up-down-arrow.svg"
+                                    src={arrowSrc || "/up-down-arrow.png"} // changed
                                     alt="Reorder layer"
                                     width={16}
                                     height={16}
