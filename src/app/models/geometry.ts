@@ -18,7 +18,7 @@ export const geometryData: Map<string, GeometryType> = new Map([
       order: 8,
       style: new Style({
         stroke: new Stroke({
-          color: "rgba(0, 255, 51, 1)",
+          color: "rgb(255, 111, 0)",
           width: 3,
         }),
       }),

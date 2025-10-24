@@ -4,12 +4,17 @@ import { useEffect, useState } from "react";
 import OlMap from "@/components/Map";
 import Sidebar from "@/components/Sidebar";
 import { geometryData, GeometryType } from "./models/geometry";
+import Image from "next/image";
 
 export default function Home() {
     const [activeTypes, setActiveTypes] = useState<string[]>([]);
     const [geoData, setGeoData] = useState<GeometryType[]>([]);
     const loadedGeoData = geometryData;
     const [options, setOptions] = useState<string[]>(Array.from(loadedGeoData.keys()));
+    const [collapsed, setCollapsed] = useState<boolean>(true);
+    const collapsedWidth = 64;
+    const expandedWidth = 260;
+    const sideWidth = collapsed ? collapsedWidth : expandedWidth;
 
     async function fetchData() {
         const municipal = await fetch("data/Eskilstuna_Municipal_Map.geojson");
@@ -64,14 +69,51 @@ export default function Home() {
     }, [activeTypes]);
 
     return (
-        <div style={{ display: "flex", height: "100%", minHeight: 600 }}>
-            <Sidebar
-                options={options}
-                actives={activeTypes}
-                onToggle={(t) => setActiveTypes(type => activeTypes.includes(t) ? type.filter(item => item !== t) : [...type, t])}
-            />
-            <div style={{ flex: 1 }}>
-                <OlMap geoData={geoData} />
+        <div style={{ display: "flex", flexDirection: 'column', height: "100vh" }}>
+            <header style={{
+                display: 'flex',
+                alignItems: 'center',
+                height: 60,
+                borderBottom: '1px solid #ddd',
+                boxSizing: 'border-box',
+                backgroundColor: '#03045e'
+            }}>
+                <div
+                    style={{
+                        width: sideWidth,
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 8,
+                        padding: '0 12px',
+                        cursor: 'pointer',
+                        userSelect: 'none',
+                        transition: 'width 0.25s ease'
+                    }}
+                    onClick={() => setCollapsed(c => !c)}
+                >
+                    <span style={{
+                        fontSize: 24,
+                        lineHeight: 1,
+                        color: '#fff'
+                    }}>☰</span>
+                    {!collapsed && <span style={{ fontWeight: 600, color: '#fff' }}>Layers</span>}
+                </div>
+                <div style={{ flex: 1, textAlign: 'center' }}>
+                    <Image src="/Logo.png" alt="Logo" width={200} height={64} style={{ objectFit: 'contain' }} />
+                </div>
+                <div style={{ width: sideWidth }} />
+            </header>
+            <div style={{ display: "flex", flex: 1, minHeight: 0 }}>
+                <Sidebar
+                    options={options}
+                    actives={activeTypes}
+                    onToggle={(t) => setActiveTypes(type => activeTypes.includes(t) ? type.filter(item => item !== t) : [...type, t])}
+                    collapsed={collapsed}
+                    width={sideWidth}
+                />
+                <div style={{ flex: 1, minWidth: 0 }}>
+                    <OlMap geoData={geoData} headerHeight={60} />
+                </div>
             </div>
         </div>
     );

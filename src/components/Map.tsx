@@ -17,6 +17,7 @@ import { Feature, MapBrowserEvent } from 'ol';
 
 type Props = {
     geoData: GeometryType[];
+    headerHeight?: number;
 };
 
 proj4.defs(
@@ -25,7 +26,7 @@ proj4.defs(
 );
 register(proj4);
 
-export default function OlMap({ geoData }: Props) {
+export default function OlMap({ geoData, headerHeight = 60 }: Props) {
     const mapRef = useRef<HTMLDivElement | null>(null);
     const mapObj = useRef<Map | null>(null);
     const vectorLayer = useRef<VectorLayer<VectorSource> | null>(null);
@@ -180,7 +181,7 @@ export default function OlMap({ geoData }: Props) {
 
     return (
         <>
-            <div ref={mapRef} style={{ width: "100%", height: "100vh" }} />
+            <div ref={mapRef} style={{ width: "100%", height: `calc(100vh - ${headerHeight}px)` }} />
             {tooltip.visible && (
                 <div
                     style={{
